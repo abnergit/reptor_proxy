@@ -1,0 +1,21 @@
+services:
+  sysreptor-ro-proxy:
+    build: .
+    container_name: sysreptor-ro-proxy
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "8080:8080"
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - sysreptor_default
+
+networks:
+  sysreptor_default:
+    external: true
