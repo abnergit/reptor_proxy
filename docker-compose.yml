@@ -1,11 +1,19 @@
 services:
   sysreptor-ro-proxy:
-    build: .
+    build:
+      context: .
+      args:
+        TLS_SAN: "DNS:localhost,IP:127.0.0.1,IP:IP_DO_SERVIDOR"
     container_name: sysreptor-ro-proxy
     restart: unless-stopped
     env_file: .env
     ports:
       - "8080:8080"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import ssl,sys,urllib.request; sys.exit(0 if urllib.request.urlopen('https://127.0.0.1:8080/health', timeout=3, context=ssl._create_unverified_context()).status==200 else 1)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     read_only: true
     tmpfs:
       - /tmp
